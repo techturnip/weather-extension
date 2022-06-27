@@ -7,7 +7,12 @@ import {
   CardContent,
   Typography,
 } from '@material-ui/core'
-import { fetchOpenWeatherData, OpenWeatherData } from '../../utils/api'
+import {
+  fetchOpenWeatherData,
+  OpenWeatherData,
+  OpenWeatherTempScale,
+} from '../../utils/api'
+import './WeatherCard.css'
 
 const WeatherCardContainer: React.FC<{
   children: React.ReactNode
@@ -20,7 +25,7 @@ const WeatherCardContainer: React.FC<{
         <CardActions>
           {onDelete && (
             <Button color="secondary" onClick={onDelete}>
-              Delete
+              <Typography className="weatherCard-body">Delete</Typography>
             </Button>
           )}
         </CardActions>
@@ -33,22 +38,28 @@ type WeatherCardState = 'loading' | 'error' | 'ready'
 
 const WeatherCard: React.FC<{
   city: string
+  tempScale: OpenWeatherTempScale
   onDelete?: () => void
-}> = ({ city, onDelete }) => {
+}> = ({ city, tempScale, onDelete }) => {
   const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null)
   const [cardState, setCardState] = useState<WeatherCardState>('loading')
+  const tempScaleStr = tempScale === 'imperial' ? '\u2109' : '\u2103'
 
   useEffect(() => {
-    fetchOpenWeatherData(city).then((data) => {
-      setWeatherData(data)
-      setCardState('ready')
-    })
-  }, [city])
+    fetchOpenWeatherData(city, tempScale)
+      .then((data) => {
+        console.log(data)
+        setWeatherData(data)
+        setCardState('ready')
+      })
+      .catch((err) => setCardState('error'))
+  }, [city, tempScale])
 
   if (cardState === 'loading' || cardState === 'error') {
     return (
       <WeatherCardContainer onDelete={onDelete}>
-        <Typography variant="body1">
+        <Typography className="weatherCard-title">{city}</Typography>
+        <Typography className="weatherCard-body">
           {cardState === 'loading'
             ? 'Loading...'
             : 'Error: could not retrieve weather data for this city.'}
@@ -59,12 +70,12 @@ const WeatherCard: React.FC<{
 
   return (
     <WeatherCardContainer onDelete={onDelete}>
-      <Typography variant="h5">{weatherData.name}</Typography>
-      <Typography variant="body1">
-        {Math.round(weatherData.main.temp)} F
+      <Typography className="weatherCard-title">{weatherData.name}</Typography>
+      <Typography className="weatherCard-body">
+        {Math.round(weatherData.main.temp)} {tempScaleStr}
       </Typography>
-      <Typography variant="body1">
-        Feels like {Math.round(weatherData.main.feels_like)} F
+      <Typography className="weatherCard-body">
+        Feels like {Math.round(weatherData.main.feels_like)} {tempScaleStr}
       </Typography>
     </WeatherCardContainer>
   )
