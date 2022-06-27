@@ -40,7 +40,6 @@ const App: React.FC<{}> = () => {
   }
 
   const handleHomeCityChange = (homeCity: string) => {
-    console.log(homeCity)
     setOptions({ ...options, homeCity })
   }
 

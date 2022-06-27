@@ -78,6 +78,16 @@ const App: React.FC<{}> = () => {
       tempScale: options.tempScale === 'imperial' ? 'metric' : 'imperial',
     }
     setStoredOptions(updatedOptions).then(() => {
+      chrome.tabs.query(
+        {
+          active: true,
+        },
+        (tabs) => {
+          if (tabs.length > 0) {
+            chrome.tabs.sendMessage(tabs[0].id, Messages.TOGGLE_SCALE)
+          }
+        }
+      )
       setOptions(updatedOptions)
     })
   }

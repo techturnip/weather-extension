@@ -10,13 +10,11 @@ import { OpenWeatherTempScale } from '../utils/api'
 const App: React.FC<{}> = () => {
   const [options, setOptions] = useState<LocalStorageOptions | null>(null)
   const [isActive, setIsActive] = useState<boolean>(false)
-  const [scale, setScale] = useState<OpenWeatherTempScale | null>(null)
 
   useEffect(() => {
     getStoredOptions().then((options) => {
       setOptions(options)
       setIsActive(options.hasAutoOverlay)
-      setScale(options.tempScale)
     })
   }, [])
 
@@ -26,7 +24,23 @@ const App: React.FC<{}> = () => {
         setIsActive(!isActive)
       }
     })
-  }, [isActive, scale])
+  }, [isActive])
+
+  useEffect(() => {
+    function handleTempMessage(msg) {
+      if (msg === Messages.TOGGLE_SCALE) {
+        getStoredOptions().then((options) => {
+          setOptions({ ...options, tempScale: options.tempScale })
+        })
+      }
+    }
+
+    chrome.runtime.onMessage.addListener(handleTempMessage)
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleTempMessage)
+    }
+  }, [options])
 
   if (!options) {
     return null

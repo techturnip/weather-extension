@@ -48,7 +48,6 @@ const WeatherCard: React.FC<{
   useEffect(() => {
     fetchOpenWeatherData(city, tempScale)
       .then((data) => {
-        console.log(data)
         setWeatherData(data)
         setCardState('ready')
       })
