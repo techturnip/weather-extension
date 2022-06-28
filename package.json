@@ -1,6 +1,7 @@
 {
   "name": "weather-extension",
   "version": "1.0.0",
+  "author": "Tyler Turnipseed",
   "description": "React Weather Extension",
   "scripts": {
     "start": "webpack --watch --progress --config webpack.dev.js",
