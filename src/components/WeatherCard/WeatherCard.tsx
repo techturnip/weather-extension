@@ -5,10 +5,12 @@ import {
   Card,
   CardActions,
   CardContent,
+  Grid,
   Typography,
 } from '@material-ui/core'
 import {
   fetchOpenWeatherData,
+  getWeatherIconSrc,
   OpenWeatherData,
   OpenWeatherTempScale,
 } from '../../utils/api'
@@ -69,13 +71,31 @@ const WeatherCard: React.FC<{
 
   return (
     <WeatherCardContainer onDelete={onDelete}>
-      <Typography className="weatherCard-title">{weatherData.name}</Typography>
-      <Typography className="weatherCard-body">
-        {Math.round(weatherData.main.temp)} {tempScaleStr}
-      </Typography>
-      <Typography className="weatherCard-body">
-        Feels like {Math.round(weatherData.main.feels_like)} {tempScaleStr}
-      </Typography>
+      <Grid container justifyContent="space-around">
+        <Grid item>
+          <Typography className="weatherCard-title">
+            {weatherData.name}
+          </Typography>
+          <Typography className="weatherCard-temp">
+            {`${Math.round(weatherData.main.temp)}${tempScaleStr}`}
+          </Typography>
+          <Typography className="weatherCard-body">
+            {`Feels like ${Math.round(
+              weatherData.main.feels_like
+            )}${tempScaleStr}`}
+          </Typography>
+        </Grid>
+        <Grid item>
+          {weatherData.weather.length > 0 && (
+            <>
+              <img src={getWeatherIconSrc(weatherData.weather[0].icon)} />
+              <Typography className="weatherCard-body">
+                {weatherData.weather[0].description}
+              </Typography>
+            </>
+          )}
+        </Grid>
+      </Grid>
     </WeatherCardContainer>
   )
 }
